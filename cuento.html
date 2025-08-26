@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Repaso Interactivo: Amigos del alma</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+
+        :root {
+            --text-color: #333;
+            --bg-color: #fdfaf4;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --highlight-color: #e55a5a;
+            --button-bg: #6ab7a8;
+            --button-hover-bg: #559c8d;
+            --correct-bg: #28a745;
+            --incorrect-bg: #dc3545;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Comic Neue', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/lined-paper.png');
+            transition: background-color 1s ease;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            height: 85vh;
+            max-height: 650px;
+            border: 3px solid #ccc;
+            border-radius: 15px;
+            padding: 2em;
+            background: var(--container-bg);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        #start-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        #start-image {
+            max-height: 55%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        #start-title {
+            font-size: 2.5em;
+            color: var(--highlight-color);
+            margin: 0;
+        }
+
+        #start-author {
+            font-size: 1.1em;
+            color: #555;
+            margin: 10px 0 20px 0;
+        }
+
+        #start-button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 15px 35px;
+            font-size: 1.1em;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px #4a887b;
+        }
+
+        #start-button:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(2px);
+            box-shadow: 0 3px #4a887b;
+        }
+
+        #game-container {
+            display: flex;
+            gap: 2em;
+            height: 100%;
+        }
+
+        #image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #scene-image {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #text-container {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        h1 {
+            color: var(--highlight-color);
+            text-align: center;
+            font-size: 1.8em;
+            margin-top: 0;
+        }
+
+        #story-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+        
+        #story-text p { margin-top: 0; }
+        .choices-container { text-align: center; }
+
+        .choices-container button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 15px 25px;
+            margin: 5px;
+            font-size: 1em;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px #4a887b;
+        }
+
+        .choices-container button:hover:not(:disabled) {
+            background-color: var(--button-hover-bg);
+            transform: translateY(2px);
+            box-shadow: 0 2px #4a887b;
+        }
+
+        .choices-container button.correct {
+            background-color: var(--correct-bg);
+            box-shadow: 0 4px #1e7e34;
+            transform: translateY(0);
+        }
+        
+        .choices-container button.incorrect {
+            background-color: var(--incorrect-bg);
+            box-shadow: 0 4px #a71d2a;
+            transform: translateY(0);
+            cursor: not-allowed;
+        }
+
+        .choices-container button:disabled { opacity: 0.7; }
+        
+        #feedback-text {
+            text-align: center;
+            font-weight: bold;
+            min-height: 24px;
+            margin-top: 10px;
+        }
+        
+        #back-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: #aaa;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+        }
+        #back-button:hover { background-color: #888; }
+        
+        #quiz-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        #quiz-question { font-size: 1.5em; margin-bottom: 20px; }
+        #quiz-score { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
+        #quiz-results { font-size: 2em; }
+
+    </style>
+</head>
+<body>
+
+    <div id="start-screen" class="container">
+        <img id="start-image" src="portada.PNG" alt="Portada del Cuento">
+        <h1 id="start-title">Amigos del alma</h1>
+        <p id="start-author">Basado en el libro de Elvira Lindo y Emilio Urberuaga</p>
+        <button id="start-button">Comenzar</button>
+    </div>
+
+    <div id="main-container" class="container" style="display: none;">
+        <button id="back-button" title="Volver a la escena anterior">&#11164;</button>
+        <div id="game-container">
+            <div id="image-container">
+                <img id="scene-image" src="" alt="Escena del cuento">
+            </div>
+            <div id="text-container">
+                <h1 id="scene-title"></h1>
+                <div id="story-text"></div>
+                <p id="feedback-text"></p>
+                <div id="choices-container" class="choices-container"></div>
+            </div>
+        </div>
+        <div id="quiz-container" style="display: none;">
+            <div id="quiz-header">
+                <h1 id="quiz-title">Cuestionario Final</h1>
+                <p id="quiz-score"></p>
+            </div>
+            <p id="quiz-question"></p>
+            <div id="quiz-choices" class="choices-container"></div>
+            <p id="quiz-feedback" class="feedback-text"></p>
+            <div id="quiz-results" style="display: none;"></div>
+        </div>
+    </div>
+
+    <audio id="music-player" loop preload="auto"></audio>
+    <audio id="click-sound" preload="auto" src="click.wav"></audio>
+    <audio id="error-sound" preload="auto" src="error.wav"></audio>
+    <audio id="acierto-sound" preload="auto" src="acierto.wav"></audio>
+
+    <script>
+        const startScreen = document.getElementById('start-screen');
+        const mainContainer = document.getElementById('main-container');
+        const startButton = document.getElementById('start-button');
+
+        const gameContainer = document.getElementById('game-container');
+        const quizContainer = document.getElementById('quiz-container');
+        const backButton = document.getElementById('back-button');
+        const titulo = document.getElementById('scene-title');
+        const texto = document.getElementById('story-text');
+        const opciones = document.getElementById('choices-container');
+        const imagen = document.getElementById('scene-image');
+        const feedback = document.getElementById('feedback-text');
+        
+        const musicPlayer = document.getElementById('music-player');
+        const clickSound = document.getElementById('click-sound');
+        const errorSound = document.getElementById('error-sound');
+        const aciertoSound = document.getElementById('acierto-sound');
+
+        let sceneHistory = [];
+
+        startButton.addEventListener('click', () => {
+            playSound(clickSound);
+            startScreen.style.transition = 'opacity 0.5s';
+            startScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+                mainContainer.style.display = 'block';
+                
+                cambiarMusica('musica_alegre.mp3');
+                mostrarEscena('inicio');
+            }, 500);
+        });
+        
+        function playSound(sound) {
+            sound.currentTime = 0;
+            sound.play();
+        }
+
+        function cambiarMusica(src) {
+            if (musicPlayer.src.includes(src)) return;
+            musicPlayer.src = src;
+            musicPlayer.volume = 0.5;
+            musicPlayer.play();
+        }
+
+        function mostrarEscena(idEscena, isGoingBack = false) {
+            if (!isGoingBack && (sceneHistory.length === 0 || sceneHistory[sceneHistory.length - 1] !== idEscena)) {
+                sceneHistory.push(idEscena);
+            }
+            
+            backButton.style.display = sceneHistory.length > 1 ? 'block' : 'none';
+            gameContainer.style.display = 'flex';
+            quizContainer.style.display = 'none';
+
+            const escena = escenas[idEscena];
+            
+            feedback.innerHTML = '';
+            if(escena.musica) cambiarMusica(escena.musica);
+
+            imagen.style.opacity = '0';
+            
+            setTimeout(() => {
+                imagen.src = escena.imagen;
+                imagen.style.opacity = '1';
+                titulo.innerText = escena.titulo;
+                texto.innerHTML = `<p>${escena.texto.replace(/\n/g, '</p><p>')}</p>`;
+                
+                opciones.innerHTML = '';
+                escena.opciones.forEach(opcion => {
+                    const button = document.createElement('button');
+                    button.innerText = opcion.texto;
+                    button.onclick = () => {
+                        playSound(clickSound);
+                        if (escena.tipo === 'quiz') {
+                            if (opcion.correcto) {
+                                playSound(aciertoSound);
+                                button.classList.add('correct');
+                                feedback.style.color = 'green';
+                                feedback.innerText = '¡Correcto! Así fue como pasó.';
+                                opciones.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                                setTimeout(() => mostrarEscena(opcion.destino), 2000);
+                            } else {
+                                playSound(errorSound);
+                                button.classList.add('incorrect');
+                                button.disabled = true;
+                                feedback.style.color = 'red';
+                                feedback.innerText = `Respuesta incorrecta. Inténtalo de nuevo.`;
+                            }
+                        } else {
+                           if (opcion.destino === 'quiz_inicio') {
+                                iniciarCuestionario();
+                           } else {
+                                mostrarEscena(opcion.destino);
+                           }
+                        }
+                    };
+                    opciones.appendChild(button);
+                });
+            }, 500);
+        }
+        
+        backButton.addEventListener('click', () => {
+            if (sceneHistory.length > 1) {
+                sceneHistory.pop();
+                const previousSceneId = sceneHistory[sceneHistory.length - 1];
+                mostrarEscena(previousSceneId, true);
+            }
+        });
+
+        // --- LÓGICA DEL CUESTIONARIO ---
+        const quizHeader = document.getElementById('quiz-header');
+        const quizTitle = document.getElementById('quiz-title');
+        const quizScore = document.getElementById('quiz-score');
+        const quizQuestion = document.getElementById('quiz-question');
+        const quizChoices = document.getElementById('quiz-choices');
+        const quizFeedback = document.getElementById('quiz-feedback');
+        const quizResults = document.getElementById('quiz-results');
+
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function iniciarCuestionario() {
+            gameContainer.style.display = 'none';
+            quizContainer.style.display = 'flex';
+            quizHeader.style.display = 'block';
+            quizQuestion.style.display = 'block';
+            quizResults.style.display = 'none';
+            
+            backButton.style.display = 'none';
+
+            currentQuestionIndex = 0;
+            score = 0;
+            shuffledQuestions = [...cuestionarioPreguntas];
+            shuffleArray(shuffledQuestions);
+            
+            mostrarPregunta();
+        }
+
+        function mostrarPregunta() {
+            quizFeedback.innerText = '';
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                quizScore.innerText = `Pregunta ${currentQuestionIndex + 1} de ${shuffledQuestions.length} - Aciertos: ${score}`;
+                const preguntaActual = shuffledQuestions[currentQuestionIndex];
+                quizQuestion.innerText = preguntaActual.pregunta;
+                
+                quizChoices.innerHTML = '';
+                const shuffledAnswers = [...preguntaActual.respuestas];
+                shuffleArray(shuffledAnswers);
+
+                shuffledAnswers.forEach(respuesta => {
+                    const button = document.createElement('button');
+                    button.innerText = respuesta.texto;
+                    button.onclick = () => {
+                        playSound(clickSound);
+                        if (respuesta.correcto) {
+                            playSound(aciertoSound);
+                            button.classList.add('correct');
+                            quizFeedback.style.color = 'green';
+                            quizFeedback.innerText = '¡Muy bien!';
+                            score++;
+                            quizChoices.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                            setTimeout(() => {
+                                currentQuestionIndex++;
+                                mostrarPregunta();
+                            }, 1500);
+                        } else {
+                            playSound(errorSound);
+                            button.classList.add('incorrect');
+                            button.disabled = true;
+                            quizFeedback.style.color = 'red';
+                            quizFeedback.innerText = 'Incorrecto. ¡Elige la respuesta correcta!';
+                        }
+                    };
+                    quizChoices.appendChild(button);
+                });
+            } else {
+                mostrarResultados();
+            }
+        }
+
+        function mostrarResultados() {
+            quizHeader.style.display = 'none';
+            quizQuestion.style.display = 'none';
+            quizChoices.innerHTML = '';
+            quizFeedback.innerText = '';
+            
+            quizResults.style.display = 'block';
+            quizResults.innerHTML = `
+                <h2>¡Cuestionario Terminado!</h2>
+                <p>Tu puntuación final es:</p>
+                <p style="font-size: 2em; color: var(--highlight-color);">${score} de ${shuffledQuestions.length}</p>
+            `;
+            
+            const restartButton = document.createElement('button');
+            restartButton.innerText = 'Intentar de Nuevo';
+            restartButton.onclick = iniciarCuestionario;
+            
+            const storyButton = document.createElement('button');
+            storyButton.innerText = 'Repasar el Cuento';
+            storyButton.onclick = () => {
+                sceneHistory = [];
+                mostrarEscena('inicio');
+            };
+
+            quizChoices.appendChild(restartButton);
+            quizChoices.appendChild(storyButton);
+        }
+
+        const escenas = {
+            inicio: {
+                titulo: "Los Mejores Amigos",
+                texto: "No puede haber dos amigos mejores que Lulai y Arturo, van juntos a la escuela, se sientan juntos, juegan juntos en el patio y a los dos les entran juntos ganas de hacer pis.\nTan amigos son que un día decidieron casarse. Les casó Adrián Carro, que dijo que sabía casar, porque su padre era concejal y ya había casado a un montón de gente.\nY sí que es verdad que Adrián Carro sabía casar porque lo hizo mejor que cualquier cura y cualquier alcalde, con unas frases tan bien dichas que parecía que se había pasado la vida casando a la gente.",
+                imagen: "escuela.PNG",
+                musica: "musica_alegre.mp3",
+                opciones: [{ texto: "Continuar...", destino: "boda_adrian" }]
+            },
+            boda_adrian: {
+                titulo: "La Boda",
+                texto: "—Arturo, ¿quieres a Lulai por siempre y por jamás en el calor y en el frío, en enero y en agosto y hasta que después de la Resurrección?\nY los invitados que eran Pedrito Gómez, Carbajo y Paula exclamaron impresionados:\n—¡Ooohhhhhh!\nEra un ¡Oh! de admiración, como diciendo: «¡Qué bien habla este cura!».\nY Arturo contestó:\n—Sí, sí, pero ¿le puedo dar ya el beso a la novia, que tengo mucha prisa?",
+                imagen: "boda.PNG",
+                opciones: [{ texto: "Continuar...", destino: "pregunta_lulai" }]
+            },
+            pregunta_lulai: {
+                titulo: "El Interrogatorio a Lulai",
+                texto: "—No, todavía no —dijo Adrián Carro—, que la novia todavía no ha contestado a las preguntas del interrogatorio.\n—Lulai —empezó Adrián—, ¿quieres a Arturo para casarte con él y quererle por la noche y por la mañana una hora detrás de otra aunque haya días que no te apetezca ni una pizca?\nAnte tal pregunta, la novia se quedó dudando un rato y al final contestó:\n—Bueno, pero estaré casada un día sí y un día no, porque si no me aburro.",
+                imagen: "lulaiconfundida.PNG",
+                opciones: [{ texto: "Siguiente...", destino: "despues_boda_1" }]
+            },
+            despues_boda_1: {
+                titulo: "Fin de la Ceremonia",
+                texto: "Y los invitados a la boda, que dieron esta respuesta por buena, no dejaron ni que Adrián Carro diera su bendición a los novios, antes de que dijera aquello de: «Yo los declaro marido y mujer», tiraron cada uno un puñado de tierra en las cabezas de los novios, y entonces sonó el timbre y corrieron todos hacia la clase, todos menos el novio, que fue muy despacio y muy desilusionado, porque cuando uno se hace la ilusión de besar a su novia es muy difícil volver a clase simplemente con las ganas.",
+                imagen: "corre.PNG",
+                musica: "musica_triste.mp3",
+                opciones: [{ texto: "Continuar...", destino: "quiz_beso" }]
+            },
+            quiz_beso: {
+                titulo: "Pregunta de Repaso",
+                texto: "En la primera boda, ¿consiguió Arturo besar a Lulai?",
+                imagen: "pregunta.JPG",
+                tipo: 'quiz',
+                opciones: [
+                    { texto: "Sí, justo al final.", destino: "despues_boda_2", correcto: false },
+                    { texto: "No, porque sonó el timbre.", destino: "despues_boda_2", correcto: true },
+                    { texto: "No, porque Lulai no quiso.", destino: "despues_boda_2", correcto: false }
+                ]
+            },
+            despues_boda_2: {
+                titulo: "En Clase de Plástica",
+                texto: "Pero bueno, no hay que dramatizar, porque después de este día Lulai y Arturo se casaron unas cuantas veces más y Arturo siempre intentaba que la ceremonia fuera rápida para llegar al beso, que era lo que a él de verdad más le importaba.\nA Lulai le gustaba, pero no tanto como a Arturo, porque si fuera por Arturo hubieran estado todo el santo día dándose besos y abrazos.\nHasta la señorita Amparo tenía que intervenir algunas veces porque, por ejemplo, había veces que Lulai estaba intentando hacer su trabajo de plástica, colorear los patos sin salirse de las líneas, y de pronto, como si fuera un huracán y sin venir a cuento, Arturo le daba un abrazo y le agarraba la cara con las manos para darle varios besos.",
+                imagen: "sala.PNG",
+                musica: "musica_alegre.mp3",
+                opciones: [{ texto: "Continuar...", destino: "despues_boda_3" }]
+            },
+            despues_boda_3: {
+                titulo: "Un Rato Sí, un Rato No",
+                texto: "—Arturo, Arturo, déjala que trabaje, no seas pesado.\n—Si es que nos hemos casado en el recreo.\n—Me parece muy bien, pero no la atosigues.\n—Un rato sí y un rato no—decía Lulai mientras pintaba—, yo me caso un rato sí y un rato no.\nArturo sufría un poco cuando Lulai decía esas cosas, pero luego se le pasaba, cuando salían de la escuela y Lulai se despedía diciéndole: «Eres mi gran amigo».",
+                imagen: "unratosi.PNG",
+                opciones: [{ texto: "Continuar...", destino: "lulai_se_cansa" }]
+            },
+            lulai_se_cansa: {
+                titulo: "Lulai Quiere un Cambio",
+                texto: "Arturo quería entonces darle un beso antes de que Lulai se marchara de la mano de su madre, pero ella a lo mejor le decía ahora no, mañana en el patio. No es que Lulai quisiera hacerle sufrir, es que, sencillamente, no le gustaban tanto los besos como a su amigo del alma.\nPero, desde luego, no había en toda la clase, en toda la escuela, mejores amigos que la niña Lulai y el niño Arturo.\nArturo estaba perdidamente enamorado de ella, escribía su nombre en todas partes. A Lulai le gustaba dejarse querer.\nPero un día el niño Arturo sufrió más que nunca, porque Lulai se había cansado de casarse siempre con el mismo novio y dijo:\n—Ahora que haga Arturo de cura y yo me caso con Adrián, o con otro, me da igual.",
+                imagen: "adrian.PNG",
+                musica: "musica_triste.mp3",
+                opciones: [{ texto: "Continuar...", destino: "boda_titanic_1" }]
+            },
+            boda_titanic_1: {
+                titulo: "Arturo se Niega",
+                texto: "A Arturo le costó mucho que no se le llenaran los ojos de lágrimas y dijo tragando saliva que tenía en la garganta:\n—No quiero hacer de cura, prefiero hacer de invitado.\nAsí que fue a Carbajo a quien le tocó casar a la nueva pareja. Carbajo no quiso hacer de cura, él dijo que era el capitán del Titanic y que tenía que casarlos antes de que se hundiera el barco y se murieran todos, porque según Carbajo es infinitamente mejor casarse antes de morirse.",
+                imagen: "arturotriste.PNG",
+                opciones: [{ texto: "Continuar...", destino: "boda_titanic_2" }]
+            },
+            boda_titanic_2: {
+                titulo: "La Boda del Titanic",
+                texto: "—¿Por qué? —dijeron a coro los invitados.\n—Porque después de morirte ya no te puedes casar.\n—Aaaaahhhh —dijeron los invitados, asombrados por la sabiduría del capitán Carbajo.\nEntre las muchas virtudes del capitán Carbajo no estaba el don de la palabra, así que la ceremonia fue bastante rápida. Más o menos así:\n—¿La quieres a ésta? —preguntó el capitán Carbajo al novio mientras señalaba con un dedo a la novia.\n—Está bien —dijo el novio.\n—Está bien, no; tienes que decir «sí» o «no».\n—Sí.\n—Pos ya está, uno listo. Ahora, tú —el capitán Carbajo preguntaba ahora a Lulai—. ¿Quieres a éste?\n—Bueno —dijo la novia, con un tono que parecía que estaba diciendo: «Si no hay más remedio».",
+                imagen: "titanic.PNG",
+                opciones: [{ texto: "Continuar...", destino: "arturo_lloroso" }]
+            },
+            arturo_lloroso: {
+                titulo: "El Corazón Roto de Arturo",
+                texto: "La novia no estaba loca de amor, pero el caso es que dijo que «Bueno», y mientras los invitados tiraban la tradicional tierra sobre las cabezas de los novios, Arturo se fue solo y lloroso a la clase mucho antes de que sonara la campana, porque ésa es otra, como la boda había sido muy rápida, a Adrián Carro le había dado tiempo a darle un beso a Lulai y sólo de pensar en ese beso a Arturo le entraba una melancolía tan grande que hubiera deseado estar ya en su habitación, en su cama, para quedarse dormido y olvidarse de todo aquello.",
+                imagen: "tristeaclases.PNG",
+                opciones: [{ texto: "Siguiente...", destino: "quiz_arturo_enfadado" }]
+            },
+             quiz_arturo_enfadado: {
+                titulo: "Pregunta de Repaso",
+                texto: "Después de la boda con Adrián, ¿qué hizo Arturo en clase para mostrar su enfado?",
+                imagen: "pregunta.JPG",
+                tipo: 'quiz',
+                opciones: [
+                    { texto: "Le gritó a Lulai delante de todos.", destino: "arturo_deprimido", correcto: false },
+                    { texto: "Se quejó a la Señorita Amparo.", destino: "arturo_deprimido", correcto: false },
+                    { texto: "No quiso ser su pareja en los juegos.", destino: "arturo_deprimido", correcto: true }
+                ]
+            },
+            arturo_deprimido: {
+                titulo: "Arturo Deprimido",
+                texto: "Lulai se dio cuenta de que su gran amigo estaba medio triste, medio enfadado, porque no la interrumpió en ningún momento en clase para darle los abrazos de todos los días. Tampoco quiso estar de pareja con ella cuando hicieron el puzzle del cuerpo humano ni quiso ser su pareja en las adivinanzas.\nLulai pensó algo así como: «Bueno, ¿no me hablas? Y a mí qué me importa.»\n¿No has visto nunca a un niño deprimido? Ése era el pequeño Arturo cuando llegó a casa y sin decir nada ni quitarse la mochila de la espalda se quedó dormido en el sofá y luego no quiso casi ni cenar.",
+                imagen: "sillon.PNG",
+                opciones: [{ texto: "Al día siguiente...", destino: "dia_siguiente_patio" }]
+            },
+            dia_siguiente_patio: {
+                titulo: "La Boda con Pedrito Gómez",
+                texto: "Al día siguiente en el patio los niños también jugaron a las bodas. Arturo sabía que el juego de las bodas era bastante tonto, y lo peor es que se le había ocurrido a él sólo para poder casarse con Lulai.\nAhora se encontraba sentado en el suelo haciendo dibujos absurdos con un palo en la tierra y mirando de reojo y con rencor a los otros niños que se preparaban para la ceremonia.\nHoy volvía a ser Adrián Carro el cura. La novia, la de siempre, Lulai, porque se había pedido ser la novia por un mes, y el novio, Pedrito Gómez.",
+                imagen: "arturosuelo.PNG",
+                opciones: [{ texto: "Continuar...", destino: "pedrito_gomez" }]
+            },
+            pedrito_gomez: {
+                titulo: "El Estupendo Pedrito Gómez",
+                texto: "Lo que más le dolía a Arturo es que el novio fuera Pedrito Gómez, porque Pedrito Gómez era de ese tipo de niños que le gustan a todas las madres del mundo. Incluso la suya le decía a veces: —¿Y por qué no invitas una tarde a Pedrito Gómez que es un niño tan simpático?\nA Pedrito Gómez lo quería todo el mundo. Lo querían las madres, lo quería la señorita Amparo, lo quería Lulai, y lo que era peor, incluso lo quería él.\nTienen que ponerse en el lugar de Arturo: Pedrito Gómez el estupendo, se iba a casar con Lulai. Era terrible.",
+                imagen: "terrible.PNG",
+                opciones: [{ texto: "Continuar...", destino: "la_pelea" }]
+            },
+            la_pelea: {
+                titulo: "La Pelea",
+                texto: "Arturo siguió sentado en el suelo. El novio dijo que sí, la novia dijo que también, se dieron el beso de rigor, y entonces los invitados echaron la tierra sobre la espalda de los novios.\nFue en ese momento cuando Arturo se levantó y sin saber por qué, sin poder controlarse, le tiró la tierra a Pedrito Gómez en la cara.\nLos invitados miraron a Arturo alucinados y fue Lulai, su gran amiga, su gran amor, la que tomó cartas en el asunto, y abriéndose paso entre los invitados fue hasta Arturo y le pegó un empujón tan grande que lo tiró para atrás.",
+                imagen: "arturoenojado.PNG",
+                opciones: [{ texto: "Continuar...", destino: "insulto_feo" }]
+            },
+            insulto_feo: {
+                titulo: "El Peor Insulto",
+                texto: "Arturo se levantó y la agarró del pelo y, así enganchados el uno al otro, con la furia que de pronto tienen los niños de seis años, empezaron a insultarse con esa rabia inaudita que a veces tenemos con las personas que más queremos, con nuestros mejores amigos.\nEntre todos los insultos que se habían lanzado el uno al otro, a Arturo se le había escapado el más feo de todos los insultos del mundo.\nDespués de que Lulai le dijera que ya no iba a ser su novia nunca más, Arturo le dijo a Lulai que por él como si se iba a China y no volvía nunca.",
+                imagen: "groseria.PNG",
+                musica: "musica_triste.mp3",
+                opciones: [{ texto: "Siguiente...", destino: "lulai_bano" }]
+            },
+            lulai_bano: {
+                titulo: "La Tristeza de Lulai",
+                texto: "Los otros niños avisaron a la señorita Amparo, y ella llegó, los separó y los tuvo separados hasta que las clases acabaron.\nAhora era Lulai la que se había quedado muy seria. Cuando llegó a casa vio cómo la niña se metía en el cuarto de baño y se quedaba dentro durante más de media hora.\n¿Qué hacía Lulai en el baño tanto tiempo?\nHabía colocado un piso delante del espejo y se había subido para verse bien. Pero eso no le bastaba, quería verse la cara cerca, muy cerca, y se metió ahora dentro del lavatorio. Es muy raro pelearse tanto con un amigo, pero no con un amigo cualquiera, con el mejor.",
+                imagen: "lulaibano.PNG",
+                opciones: [{ texto: "Continuar...", destino: "lulai_recuerdos_1" }]
+            },
+            lulai_recuerdos_1: {
+                titulo: "Los Recuerdos",
+                texto: "Pero más raro todavía es que tu mejor amigo te recuerde algo que a ti no te gusta recordar, algo que te pone triste. Lulai lo recuerda, se acerca un poco más al espejo y de sus ojillos pequeños e inclinados caen algunas lágrimas.\nLulai casi nunca se acuerda de China. Ni tan siquiera la muñeca que tiene en su cuarto, una muñeca que mamá le regaló y que va vestida con un kimono, le hace pensar en China.\nTampoco se acuerda muy bien del día en que llegó a esta casa, a su casa. Sabe, porque se lo ha contado su madre, y también su padre, que no salió de la barriga de mamá, como todos los niños de su clase.",
+                imagen: "espejo.PNG",
+                opciones: [{ texto: "Continuar...", destino: "lulai_recuerdos_2" }]
+            },
+            lulai_recuerdos_2: {
+                titulo: "El Viaje Largo",
+                texto: "Sabe que no estuvo aquí desde el primer momento, pero nunca habla de eso, y los niños nunca se lo preguntan. Sólo cuando viene alguno nuevo y le dice: «¿Y tú por qué eres china si tu madre no es china?», sólo entonces Lulai contesta una respuesta que le enseñó papá para estos casos: «Porque mis padres hicieron un viaje muy largo hasta allí para buscarme».\nHace tiempo que los recuerdos más antiguos no volvían a su cabeza, pero ahora, se acuerda del primer día en que vio a sus padres. Le parecieron raros, casi de otro planeta: con las narices muy grandes, con los ojos saltones.",
+                imagen: "preguntachina.PNG",
+                opciones: [{ texto: "Continuar...", destino: "lulai_recuerdos_3" }]
+            },
+            lulai_recuerdos_3: {
+                titulo: "Seres Extraños",
+                texto: "Nunca había visto una mujer con el pelo de otro color que no fuera negro, así que el pelo de color claro de mamá le pareció horrible, y también le pareció horrible aquel hombre que tenía pelos en la cara. Se acuerda ahora, de que lloró mucho, de que gritó, lloró todo el rato durante aquel viaje tan largo con aquellos seres extraños que le hablaban aunque ella no entendiera nada de lo que le decían, y que la besaban aunque ella se tapara la cara.\nLlegó a esta ciudad en la que todo el mundo era tan raro como sus padres. ¿Cuándo dejó de sentir ese miedo?",
+                imagen: "llorandoavion.PNG",
+                opciones: [{ texto: "Siguiente...", destino: "lulai_espejo_2" }]
+            },
+            lulai_espejo_2: {
+                titulo: "La Madre más Linda",
+                texto: "Han pasado tres años desde entonces, pero Lulai ha perdido la cuenta, porque hace mucho tiempo que su madre le parece la madre más linda del mundo. No es porque lo piense ella, es que es así, es la más linda.\nLulai se mira al espejo y abre mucho los ojos. Le gustaría tenerlos grandes, le gustaría tenerlos rectos, le gustaría parecerse a ella. Ahora es Lulai la que se siente rara en medio de todo el mundo.",
+                imagen: "mirandosealespejo.PNG",
+                opciones: [{ texto: "Continuar...", destino: "lulai_mama" }]
+            },
+            lulai_mama: {
+                titulo: "El Consuelo de Mamá",
+                texto: "La madre de Lulai llama a la puerta: —¿Qué haces, cariño? —Nada, ahora salgo. La madre entra y la ve allí, tan menuda. —¿Qué le pasa a mi niña? Y sin esperar una respuesta, la mamá toma en brazos a la niña y la lleva al salón. La tiene abrazada durante un buen rato. —Lulai Violeta —le dice la madre mientras la besa. —¿Tú cuál prefieres? —Violeta —contesta la niña muy bajito. —Pero cuando te llamo Violeta no respondes. —Porque se me olvida. Lulai no me gusta.",
+                imagen: "abrazadoamama.PNG",
+                opciones: [{ texto: "Continuar...", destino: "quiz_ojos" }]
+            },
+            quiz_ojos: {
+                titulo: "Pregunta de Repaso",
+                texto: "La madre de Lulai sospecha que alguien la insultó. Más tarde, su padre llega y le da dos besos, uno en cada ojo. ¿Qué le dice sobre sus ojos?",
+                imagen: "pregunta.JPG",
+                tipo: 'quiz',
+                opciones: [
+                    { texto: "Que sus ojos son muy curiosos.", destino: "la_noche", correcto: false },
+                    { texto: "Que nada en el mundo es más bonito que sus ojos.", destino: "la_noche", correcto: true },
+                    { texto: "Que sus ojos se parecen a los de su abuela.", destino: "la_noche", correcto: false }
+                ]
+            },
+            la_noche: {
+                titulo: "El Amor de sus Padres",
+                texto: "—Si alguien te dice algo alguna vez que no te guste, si alguien te insulta, prométeme que te vas a acordar de esto que te dice papá. ¿Me lo prometes?\nLulai dice que sí con la cabeza. Entonces su papá apaga la luz. Lulai siente ahora una extraña felicidad. Es extraña porque sigue un poco triste, pero se le cierran los ojos oyendo a sus padres hablar en el cuarto de al lado. Sus voces parece que la acunan.",
+                imagen: "mimada.PNG",
+                opciones: [{ texto: "A la mañana siguiente...", destino: "la_manana_siguiente" }]
+            },
+            la_manana_siguiente: {
+                titulo: "El Perdón",
+                texto: "A la mañana siguiente se encuentra mucho más alegre. Pero cuando empiezan a bajar las escaleras, piensa que Arturo no estará esperándola. Cuando ve a Arturo y a su madre esperando en el banco de la calle, el corazón se le pone en la garganta.\nLa madre de Arturo dice: —Creo que Arturo tiene algo muy importante que decirte, Lulai.\nArturo mira al suelo muy serio. —Que me tiene que perdonar —dice sin dejar de mirar al suelo.\n—No —dice su madre—, que te tiene que perdonar, no, que le pides que te perdone.\n—Eso —dice Arturo. —Bueno, pues díselo.\n—Que te tengo que decir que te pida... se ha enredado con la frase, no, que te pido que... me perdones.",
+                imagen: "perdon.PNG",
+                musica: "musica_alegre.mp3",
+                opciones: [{ texto: "Continuar...", destino: "reconciliacion" }]
+            },
+            reconciliacion: {
+                titulo: "La Reconciliación",
+                texto: "—¿Y qué más? —Que no te volveré a insultar.\n—Dile algo. ¿Le perdonas? —dice la madre de Lulai.\nLulai dice que sí con la cabeza mirando a cualquier sitio menos a los ojos de su amigo.\n—Pero ella me empujó —dice Arturo.\n—Pero fue sin darme cuenta —dice Lulai, mintiendo un poco.\n—Ah, bueno —dice Arturo.\nY los dos niños echan a andar delante de sus madres. No se dicen nada, andan silenciosos mirando al suelo, rumiando cada uno la reconciliación, pero por dentro son tremendamente felices. Si alguien pudiera leerles el pensamiento y el corazón en estos momentos, sabría que no puede haber dos amigos mejores que Lulai y Arturo.",
+                imagen: "final.PNG",
+                opciones: [{ texto: "Fin del Cuento", destino: "final" }]
+            },
+            final: {
+                titulo: "FIN DEL CUENTO",
+                texto: "Has completado el repaso interactivo. Ahora es momento de poner a prueba tus conocimientos con el cuestionario final.",
+                imagen: "portada.PNG",
+                opciones: [
+                    { texto: "Ir al Cuestionario", destino: "quiz_inicio" },
+                    { texto: "Repasar otra vez desde el principio", destino: "inicio" }
+                ]
+            }
+        };
+
+        const cuestionarioPreguntas = [
+            { pregunta: "¿Quién casó a Lulai y Arturo por primera vez?", respuestas: [{ texto: "Adrián Carro", correcto: true }, { texto: "Carbajo", correcto: false }, { texto: "La señorita Amparo", correcto: false }] },
+            { pregunta: "¿Qué condición puso Lulai para casarse?", respuestas: [{ texto: "Estar casada un día sí y un día no", correcto: true }, { texto: "Que Arturo le diera un regalo", correcto: false }, { texto: "Que la ceremonia fuera corta", correcto: false }] },
+            { pregunta: "¿Qué era lo que más le importaba a Arturo de las bodas?", respuestas: [{ texto: "El beso a la novia", correcto: true }, { texto: "Decir 'sí, quiero'", correcto: false }, { texto: "Que le tiraran tierra", correcto: false }] },
+            { pregunta: "¿Qué hacía Arturo en clase que molestaba a Lulai?", respuestas: [{ texto: "Le daba abrazos y besos mientras trabajaba", correcto: true }, { texto: "Le quitaba los lápices", correcto: false }, { texto: "Hablaba muy alto", correcto: false }] },
+            { pregunta: "¿Por qué Lulai decidió casarse con otro niño?", respuestas: [{ texto: "Porque se cansó de casarse siempre con el mismo", correcto: true }, { texto: "Porque se enfadó con Arturo", correcto: false }, { texto: "Porque Adrián se lo pidió", correcto: false }] },
+            { pregunta: "¿Quién fue la segunda persona que casó a Lulai?", respuestas: [{ texto: "Carbajo", correcto: true }, { texto: "Pedrito Gómez", correcto: false }, { texto: "Adrián Carro", correcto: false }] },
+            { pregunta: "¿De qué dijo Carbajo que era el capitán?", respuestas: [{ texto: "Del Titanic", correcto: true }, { texto: "De un barco pirata", correcto: false }, { texto: "Del equipo de fútbol", correcto: false }] },
+            { pregunta: "¿Por qué, según Carbajo, era mejor casarse antes de morirse?", respuestas: [{ texto: "Porque después de morirte ya no te puedes casar", correcto: true }, { texto: "Porque es más divertido", correcto: false }, { texto: "Porque da buena suerte", correcto: false }] },
+            { pregunta: "¿Qué hizo que Arturo se pusiera muy triste y se fuera a clase solo?", respuestas: [{ texto: "Ver que Adrián le dio un beso a Lulai", correcto: true }, { texto: "Que Carbajo no lo invitó a la boda", correcto: false }, { texto: "Que Lulai no le habló", correcto: false }] },
+            { pregunta: "¿Con quién se casó Lulai el día que Arturo se enfadó mucho?", respuestas: [{ texto: "Con Pedrito Gómez", correcto: true }, { texto: "Con Carbajo", correcto: false }, { texto: "Con Adrián Carro", correcto: false }] },
+            { pregunta: "¿Qué le decían las madres a Arturo sobre Pedrito Gómez?", respuestas: [{ texto: "Que era un niño muy simpático", correcto: true }, { texto: "Que era muy inteligente", correcto: false }, { texto: "Que corría muy rápido", correcto: false }] },
+            { pregunta: "¿Qué le tiró Arturo a Pedrito Gómez en la cara?", respuestas: [{ texto: "Tierra", correcto: true }, { texto: "Agua", correcto: false }, { texto: "Un lápiz", correcto: false }] },
+            { pregunta: "¿Qué hizo Lulai justo después de que Arturo le tirara tierra a Pedrito?", respuestas: [{ texto: "Le pegó un empujón a Arturo", correcto: true }, { texto: "Se puso a llorar", correcto: false }, { texto: "Avisó a la señorita Amparo", correcto: false }] },
+            { pregunta: "¿Cuál fue el peor insulto que Arturo le dijo a Lulai?", respuestas: [{ texto: "Que ojalá se fuera a China y no volviera", correcto: true }, { texto: "Que ya no era su amiga", correcto: false }, { texto: "Que era una tonta", correcto: false }] },
+            { pregunta: "¿Cuánto tiempo se quedó Lulai encerrada en el baño?", respuestas: [{ texto: "Más de media hora", correcto: true }, { texto: "Cinco minutos", correcto: false }, { texto: "Una hora exacta", correcto: false }] },
+            { pregunta: "¿Qué le enseñó su papá a Lulai a contestar si le preguntaban por qué era china?", respuestas: [{ texto: "Porque sus padres hicieron un viaje muy largo para buscarla", correcto: true }, { texto: "Porque nació en China", correcto: false }, { texto: "Porque le gusta la comida china", correcto: false }] },
+            { pregunta: "¿Qué le pareció horrible a Lulai de sus padres la primera vez que los vio?", respuestas: [{ texto: "Sus narices grandes y ojos saltones", correcto: true }, { texto: "Su ropa", correcto: false }, { texto: "Su coche", correcto: false }] },
+            { pregunta: "¿Qué es lo que más le gusta al padre de Lulai de su cara?", respuestas: [{ texto: "Sus ojos", correcto: true }, { texto: "Su nariz", correcto: false }, { texto: "Sus mejillas", correcto: false }] },
+            { pregunta: "¿Qué le gustaría tener a Lulai para parecerse a su madre?", respuestas: [{ texto: "Los ojos grandes y rectos", correcto: true }, { texto: "El pelo de color claro", correcto: false }, { texto: "Ser más alta", correcto: false }] },
+            { pregunta: "¿Cuál de sus dos nombres prefería Lulai?", respuestas: [{ texto: "Violeta", correcto: true }, { texto: "Lulai", correcto: false }, { texto: "Ninguno de los dos", correcto: false }] },
+            { pregunta: "¿Qué hacía el padre de Lulai todas las noches en su cama?", respuestas: [{ texto: "Le contaba el cuento de los tres cerditos", correcto: true }, { texto: "Le cantaba una canción", correcto: false }, { texto: "Le leía un poema", correcto: false }] },
+            { pregunta: "¿Qué hacía la madre de Lulai antes de que se durmiera del todo?", respuestas: [{ texto: "Entraba a darle el último beso del día", correcto: true }, { texto: "Le llevaba un vaso de agua", correcto: false }, { texto: "Le arropaba con la manta", correcto: false }] },
+            { pregunta: "¿Quién le dijo a Arturo que tenía que pedirle perdón a Lulai?", respuestas: [{ texto: "Su madre", correcto: true }, { texto: "Su padre", correcto: false }, { texto: "La señorita Amparo", correcto: false }] },
+            { pregunta: "¿Cómo se sintieron Lulai y Arturo por dentro mientras caminaban a la escuela después de reconciliarse?", respuestas: [{ texto: "Tremendamente felices", correcto: true }, { texto: "Todavía un poco enfadados", correcto: false }, { texto: "Nerviosos y con miedo", correcto: false }] },
+            { pregunta: "¿Qué hacía Lulai en clase cuando Arturo la interrumpía con abrazos?", respuestas: [{ texto: "Colorear unos patos", correcto: true }, { texto: "Hacer un puzzle", correcto: false }, { texto: "Leer un libro", correcto: false }] }
+        ];
+
+        document.body.addEventListener('click', () => {
+            if (musicPlayer.paused) {
+                cambiarMusica('musica_alegre.mp3');
+            }
+        }, { once: true });
+        
+    </script>
+</body>
+</html>
