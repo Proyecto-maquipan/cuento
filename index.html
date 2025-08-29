@@ -197,6 +197,27 @@
         }
         #back-button:hover { background-color: #888; }
         
+        /* --- NUEVO: Estilos para el botón de lectura --- */
+        #read-aloud-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #read-aloud-button:hover { background-color: var(--button-hover-bg); }
+        /* --- FIN DE NUEVOS ESTILOS --- */
+        
         #quiz-container {
             display: flex;
             flex-direction: column;
@@ -221,6 +242,8 @@
 
     <div id="main-container" class="container" style="display: none;">
         <button id="back-button" title="Volver a la escena anterior">&#11164;</button>
+        <button id="read-aloud-button" title="Leer texto en voz alta">&#128266;</button>
+        
         <div id="game-container">
             <div id="image-container">
                 <img id="scene-image" src="" alt="Escena del cuento">
@@ -263,6 +286,9 @@
         const imagen = document.getElementById('scene-image');
         const feedback = document.getElementById('feedback-text');
         
+        // --- NUEVO: Referencia al botón de lectura ---
+        const readAloudButton = document.getElementById('read-aloud-button');
+        
         const musicPlayer = document.getElementById('music-player');
         const clickSound = document.getElementById('click-sound');
         const errorSound = document.getElementById('error-sound');
@@ -283,6 +309,28 @@
                 mostrarEscena('inicio');
             }, 500);
         });
+
+        // --- NUEVO: Función para leer texto y evento del botón ---
+        function hablarTexto(textoParaHablar) {
+            // Detiene cualquier lectura en curso
+            speechSynthesis.cancel();
+
+            // Crea un nuevo objeto de síntesis de voz
+            const utterance = new SpeechSynthesisUtterance(textoParaHablar);
+            
+            // Configura el idioma a español
+            utterance.lang = 'es-ES';
+            utterance.rate = 1; // Velocidad de la voz
+
+            // Inicia la lectura
+            speechSynthesis.speak(utterance);
+        }
+
+        readAloudButton.addEventListener('click', () => {
+            const textoActual = titulo.innerText + ". " + texto.innerText;
+            hablarTexto(textoActual);
+        });
+        // --- FIN DE LA NUEVA LÓGICA DE VOZ ---
         
         function playSound(sound) {
             sound.currentTime = 0;
@@ -297,6 +345,9 @@
         }
 
         function mostrarEscena(idEscena, isGoingBack = false) {
+            // --- NUEVO: Detener la lectura de la escena anterior ---
+            speechSynthesis.cancel();
+
             if (!isGoingBack && (sceneHistory.length === 0 || sceneHistory[sceneHistory.length - 1] !== idEscena)) {
                 sceneHistory.push(idEscena);
             }
@@ -317,6 +368,10 @@
                 imagen.style.opacity = '1';
                 titulo.innerText = escena.titulo;
                 texto.innerHTML = `<p>${escena.texto.replace(/\n/g, '</p><p>')}</p>`;
+
+                // --- NUEVO: Llamar a la función de voz automáticamente ---
+                const textoCompleto = escena.titulo + ". " + escena.texto;
+                hablarTexto(textoCompleto);
                 
                 opciones.innerHTML = '';
                 escena.opciones.forEach(opcion => {
@@ -389,6 +444,9 @@
             
             backButton.style.display = 'none';
 
+            // --- NUEVO: Detener cualquier lectura al iniciar el cuestionario ---
+            speechSynthesis.cancel();
+            
             currentQuestionIndex = 0;
             score = 0;
             shuffledQuestions = [...cuestionarioPreguntas];
@@ -403,6 +461,9 @@
                 quizScore.innerText = `Pregunta ${currentQuestionIndex + 1} de ${shuffledQuestions.length} - Aciertos: ${score}`;
                 const preguntaActual = shuffledQuestions[currentQuestionIndex];
                 quizQuestion.innerText = preguntaActual.pregunta;
+
+                // --- NUEVO: Leer la pregunta del cuestionario ---
+                hablarTexto(preguntaActual.pregunta);
                 
                 quizChoices.innerHTML = '';
                 const shuffledAnswers = [...preguntaActual.respuestas];
@@ -413,11 +474,13 @@
                     button.innerText = respuesta.texto;
                     button.onclick = () => {
                         playSound(clickSound);
+                        speechSynthesis.cancel(); // Detener lectura al responder
                         if (respuesta.correcto) {
                             playSound(aciertoSound);
                             button.classList.add('correct');
                             quizFeedback.style.color = 'green';
                             quizFeedback.innerText = '¡Muy bien!';
+                            hablarTexto('¡Muy bien!');
                             score++;
                             quizChoices.querySelectorAll('button').forEach(btn => btn.disabled = true);
                             setTimeout(() => {
@@ -430,6 +493,7 @@
                             button.disabled = true;
                             quizFeedback.style.color = 'red';
                             quizFeedback.innerText = 'Incorrecto. ¡Elige la respuesta correcta!';
+                            hablarTexto('Incorrecto');
                         }
                     };
                     quizChoices.appendChild(button);
@@ -446,12 +510,16 @@
             quizFeedback.innerText = '';
             
             quizResults.style.display = 'block';
+            const resultadoTexto = `¡Cuestionario Terminado! Tu puntuación final es: ${score} de ${shuffledQuestions.length}`;
             quizResults.innerHTML = `
                 <h2>¡Cuestionario Terminado!</h2>
                 <p>Tu puntuación final es:</p>
                 <p style="font-size: 2em; color: var(--highlight-color);">${score} de ${shuffledQuestions.length}</p>
             `;
             
+            // --- NUEVO: Leer los resultados finales ---
+            hablarTexto(resultadoTexto);
+
             const restartButton = document.createElement('button');
             restartButton.innerText = 'Intentar de Nuevo';
             restartButton.onclick = iniciarCuestionario;
@@ -699,5 +767,3 @@
     </script>
 </body>
 </html>
-
-
